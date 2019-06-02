@@ -1,0 +1,160 @@
+body{
+    padding: 0;
+    margin: 0;
+    background: black;
+    color: #00bdfb;
+}
+h1{
+    font-size: 40px;
+    font-weight: 800;
+}
+h4{
+    font-size: 24px;
+    font-weight: 800;
+}
+
+
+.relative-timer-fundo{
+    $top:50%;
+    $left:50%;
+    position: fixed;
+    top: $top;
+    left:$left;
+    transform: translate(-$left,-$top)
+}
+div.relative-timer-fundo > svg > circle{
+    stroke: rgb(31, 31, 31);
+    stroke-width: 10;
+    fill: rgb(8, 8, 8); 
+} 
+
+.relative-timer-frente{
+    $top:50%;
+    $left:50%;
+    position: fixed;
+    top: $top;
+    left:$left;
+    transform: translate(-$left,-$top) rotate(90deg);
+    z-index: 1;
+}
+div.relative-timer-frente > svg > circle{
+    stroke-width: 8;
+    fill: rgb(8, 8, 8); 
+}
+
+.general-timer-fundo{
+    $top:30%;
+    $left:60%;
+    position: fixed;
+    top: $top;
+    left:$left;
+    transform: translate(-$left,-$top);
+    z-index: 2;
+}
+div.general-timer-fundo > svg > circle{
+    stroke: rgb(32,32,32);
+    stroke-width: 7;
+    fill: rgb(8,8,8);
+}
+
+.general-timer-frente{
+    $top:30%;
+    $left:60%;
+    position: fixed;
+    top: $top;
+    left:$left;
+    transform: translate(-$left,-$top) rotate(90deg);
+    z-index: 2;
+}
+div.general-timer-frente > svg > circle{
+    stroke-width: 7;
+    fill: rgb(8,8,8);
+}
+.timer{
+    width: 200px;
+    $top:50%;
+    $left:50%;
+    position: fixed;
+    top: $top;
+    left:$left;
+    transform: translate(-$left,-$top);
+    z-index: 10;
+    border-bottom: 2px solid;
+    text-align: center;
+}
+.percentege{
+    $top:60%;
+    $left:50%;
+    position: fixed;
+    top: $top;
+    left:$left;
+    transform: translate(-$left,-$top);
+    z-index: 10;
+}
+.general-icon{
+    $top:32%;
+    $left:59.7%;
+    position: fixed;
+    top: $top;
+    left:$left;
+    transform: translate(-$left,-$top);
+    z-index: 10;
+    border-bottom: 2px solid;
+    width: 80px;
+    text-align: center;
+}
+
+
+.general-count{
+    $top:38%;
+    $left:59%;
+    position: fixed;
+    top: $top;
+    left:$left;
+    transform: translate(-$left,-$top);
+    z-index: 10;
+    text-align: center;
+}
+.buttons{
+    $top:87%;
+    $left:50%;
+    position: fixed;
+    top: $top;
+    left:$left;
+    transform: translate(-$left,-$top);
+
+}
+.default-button{
+    border: 2px solid #00bdfb;
+    color: #00bdfb;
+    font-weight: 800;
+    background: transparent;
+    padding: 8px 20px;
+    margin: 0px 5px;
+    &:hover{
+        background: #00bdfb;
+        color: #5d0046;
+    }
+}
+label,.modal-header{
+    color:  #42367d;
+}
+
+.button-save{
+    background: #42367d;
+    border: 1px solid #42367d;
+    &:hover{
+        background: #00bdfb;
+        border: 1px solid #00bdfb;
+    }
+}
+
+div.modal-dialog {
+    position: absolute ;
+    width: 500px ;
+    $top:15% ;
+    $left:30% ;
+    top: $top;
+    left: $left;
+}
+// 
