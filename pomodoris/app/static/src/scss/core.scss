@@ -24,7 +24,7 @@ h4{
 }
 div.relative-timer-fundo > svg > circle{
     stroke: rgb(31, 31, 31);
-    stroke-width: 10;
+    stroke-width: 4;
     fill: rgb(8, 8, 8); 
 } 
 
@@ -34,7 +34,7 @@ div.relative-timer-fundo > svg > circle{
     position: fixed;
     top: $top;
     left:$left;
-    transform: translate(-$left,-$top) rotate(90deg);
+    transform: translate(-$left,-$top) rotate(-90deg);
     z-index: 1;
 }
 div.relative-timer-frente > svg > circle{
@@ -53,7 +53,7 @@ div.relative-timer-frente > svg > circle{
 }
 div.general-timer-fundo > svg > circle{
     stroke: rgb(32,32,32);
-    stroke-width: 7;
+    stroke-width: 4;
     fill: rgb(8,8,8);
 }
 
@@ -63,7 +63,7 @@ div.general-timer-fundo > svg > circle{
     position: fixed;
     top: $top;
     left:$left;
-    transform: translate(-$left,-$top) rotate(90deg);
+    transform: translate(-$left,-$top) rotate(-90deg);
     z-index: 2;
 }
 div.general-timer-frente > svg > circle{
