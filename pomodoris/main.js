@@ -9,7 +9,7 @@ let mainWindow
 function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 1000,
+    width: 1300,
     height: 800,
     webPreferences: {
       nodeIntegration: true
@@ -20,7 +20,7 @@ function createWindow() {
   // and load the index.html of the app.
   mainWindow.loadFile('app/index.html')
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
@@ -51,14 +51,3 @@ app.on('activate', function () {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
-ipcMain.on('abrir-config', () => {
-  console.log('abrir configurações');
-  modalWindow = new BrowserWindow({
-    width: 500,
-    height: 800,
-    webPreferences: {
-      nodeIntegration: true
-    }
-  })
-  modalWindow.loadFile('app/modal.html');
-})

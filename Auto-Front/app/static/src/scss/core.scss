@@ -72,7 +72,7 @@ div.general-timer-frente > svg > circle{
 }
 .timer{
     width: 200px;
-    $top:50%;
+    $top:45%;
     $left:50%;
     position: fixed;
     top: $top;
@@ -83,7 +83,7 @@ div.general-timer-frente > svg > circle{
     text-align: center;
 }
 .percentege{
-    $top:60%;
+    $top:55%;
     $left:50%;
     position: fixed;
     top: $top;
@@ -107,7 +107,7 @@ div.general-timer-frente > svg > circle{
 
 .general-count{
     $top:38%;
-    $left:59%;
+    $left:59.4%;
     position: fixed;
     top: $top;
     left:$left;
@@ -157,4 +157,36 @@ div.modal-dialog {
     top: $top;
     left: $left;
 }
-// 
+div.totais > div > h4{
+    display: inline;
+}
+.total-work{
+    padding-right: 10px;
+    border-right: 1px solid;
+}
+.total-rest {
+    padding-left: 10px;
+}
+.totais{
+    display: inline-flex;
+    text-align: center;
+    z-index: 10;
+    $top:60%;
+    $left:50%;
+    position: fixed;
+    top: $top;
+    left:$left;
+    transform: translate(-$left,-$top);
+
+}
+
+button:focus {
+    outline: none !important;
+}
+
+#pause-icon, #rest-icon{
+    display: none;
+}
+#play-pause-text{
+    margin-left: 5px;
+}
