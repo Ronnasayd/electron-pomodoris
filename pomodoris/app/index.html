@@ -16,7 +16,7 @@
 <body>
     <div class="container">
         <div class="totais">
-            <div class="total-work">
+            <div class="total-work" data-toggle="tooltip" data-placement="bottom" title="00:00:00">
                 <svg width="24" height="20" aria-hidden="true" data-prefix="fas" data-icon="business-time"
                     class="svg-inline--fa fa-business-time fa-w-20" xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 640 512">
@@ -25,7 +25,7 @@
                 </svg>
                 <h4>00</h4>
             </div>
-            <div class="total-rest">
+            <div class="total-rest" data-toggle="tooltip" data-placement="bottom" title="00:00:00">
                 <svg width="24" height="24" aria-hidden="true" data-prefix="fas" data-icon="charging-station"
                     class="svg-inline--fa fa-charging-station fa-w-18" xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 576 512">
@@ -60,17 +60,17 @@
                             <div class="form-group">
                                 <label for="exampleInputEmail1">Work Time</label>
                                 <input type="email" class="form-control" id="work-time" aria-describedby="emailHelp"
-                                    value="20">
+                                    value="1">
                             </div>
                             <div class="form-group">
                                 <label for="exampleInputEmail1">Long Rest Time</label>
                                 <input type="email" class="form-control" id="long-rest-time"
-                                    aria-describedby="emailHelp" value="25">
+                                    aria-describedby="emailHelp" value="1">
                             </div>
                             <div class="form-group">
                                 <label for="exampleInputEmail1">Short Rest Time</label>
                                 <input type="email" class="form-control" id="short-rest-time"
-                                    aria-describedby="emailHelp" value="5">
+                                    aria-describedby="emailHelp" value="1">
                             </div>
                         </form>
                     </div>
@@ -145,7 +145,7 @@
                 <h4>0/4</h4>
             </div>
             <div class="general-icon">
-                <svg hidden id="rest-icon" width="32" height="32" aria-hidden="true" focusable="false" data-prefix="fas"
+                <svg id="rest-icon" width="32" height="32" aria-hidden="true" focusable="false" data-prefix="fas"
                     data-icon="charging-station" class="svg-inline--fa fa-charging-station fa-w-18" role="img"
                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
                     <path fill="currentColor"

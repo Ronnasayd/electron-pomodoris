@@ -1,16 +1,26 @@
 const moment = require('moment')
 const utils = require('./utils')
 
+$('[data-toggle="tooltip"]').tooltip();
+
+
 let playPause = ['play', 'pause'];
+let workRest = ['work', 'rest']
+
 let workTime = $('#work-time').val() * 60
 let shortRestTime = $('#short-rest-time').val() * 60
 let longRestTime = $('#long-rest-time').val() * 60
+
 
 let timer = $('.timer>h1')
 let timerSeconds = 0;
 let timerText = '';
 let timerInterval = null;
 
+let generalQueue = ['w', 'sr', 'w', 'sr', 'w', 'sr', 'w', 'lr'].reverse()
+let fase = generalQueue.pop()
+
+let maximunRelativeTimer = 0;
 
 let timerFrontRelative = $('div.relative-timer-frente > svg > circle')
 const timerFrontRelativeRadius = parseFloat(timerFrontRelative.attr('r'))
@@ -28,6 +38,12 @@ timerFrontGeneral.attr('stroke-dashoffset', timerFrontGeneralArea)
 
 let timerRelativePercentage = $('div.percentege > h4')
 
+$('.reset').on('click', () => {
+    console.log('reseted')
+    timer.text('00:00')
+    timerRelativePercentage.text('00%')
+})
+
 $('.play-pause').on('click', () => {
     if (playPause[0] === 'play') {
         console.log('play')
@@ -35,7 +51,7 @@ $('.play-pause').on('click', () => {
         $('#play-icon').hide()
         $('#pause-icon').show()
         $('#play-pause-text').text('Pause')
-        new Notification('Contador Iniciado')
+        new Notification('Counter Started')
         timerInterval = setInterval(incrementSeconds, 1000)
         return
     }
@@ -45,28 +61,45 @@ $('.play-pause').on('click', () => {
         $('#pause-icon').hide()
         $('#play-icon').show()
         $('#play-pause-text').text('Play')
-        new Notification('Contador Parado')
+        new Notification('Stopped Counter')
         clearInterval(timerInterval)
         return
     }
 })
 
 incrementSeconds = () => {
+    if (fase === 'w') {
+        maximunRelativeTimer = workTime;
+    }
+    if (fase === 'sr') {
+        maximunRelativeTimer = shortRestTime;
+    }
+    if (fase === 'lr') {
+        maximunRelativeTimer = longRestTime;
+    }
+
+    if (timerSeconds >= maximunRelativeTimer) {
+        fase = generalQueue.pop()
+        console.log(fase)
+        $('.reset').click()
+        workRest = utils.changeIcon(workRest)
+    }
+
+
     timerSeconds = moment.duration('00:' + timer.text()).asSeconds()
     timerSeconds++
     timerText = moment().startOf('day').seconds(timerSeconds).format("mm:ss");
     timer.text(timerText)
 
-    let timerFrontRelativeNewArea = timerFrontRelativeArea * (1 - timerSeconds / 60);
+    let timerFrontRelativeNewArea = timerFrontRelativeArea * (1 - timerSeconds / maximunRelativeTimer);
     timerFrontRelative.attr('stroke-dashoffset', timerFrontRelativeNewArea)
 
 
-    let timerFrontGeneralNewArea = timerFrontGeneralArea * (1 - timerSeconds / 60);
+    let timerFrontGeneralNewArea = timerFrontGeneralArea * (1 - timerSeconds / maximunRelativeTimer);
     timerFrontGeneral.attr('stroke-dashoffset', timerFrontGeneralNewArea)
 
-    let percentage = utils.adjustZeros(Math.floor(100 * timerSeconds / 60).toString())
+    let percentage = utils.adjustZeros(Math.floor(100 * timerSeconds / maximunRelativeTimer).toString())
     timerRelativePercentage.text(percentage + '%')
-    console.log(percentage)
 
 }
 

@@ -163,9 +163,11 @@ div.totais > div > h4{
 .total-work{
     padding-right: 10px;
     border-right: 1px solid;
+    cursor: pointer;
 }
 .total-rest {
     padding-left: 10px;
+    cursor: pointer;
 }
 .totais{
     display: inline-flex;
