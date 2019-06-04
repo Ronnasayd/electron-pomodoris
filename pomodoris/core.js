@@ -3,14 +3,29 @@ const utils = require('./utils')
 
 $('[data-toggle="tooltip"]').tooltip();
 
+let timerFrontGeneralNewArea = 0;
+let timerFrontRelativeNewArea = 0;
 
 let playPause = ['play', 'pause'];
 let workRest = ['work', 'rest']
+
+let generalWorkElement = $('div.total-work > h4')
+let genrealRestElement = $('div.total-rest > h4')
 
 let workTime = $('#work-time').val() * 60
 let shortRestTime = $('#short-rest-time').val() * 60
 let longRestTime = $('#long-rest-time').val() * 60
 
+let generalCount = $('div.general-count > h4')
+
+let generalWorkTime = workTime * 4
+let generalRestTime = (3 * shortRestTime + longRestTime)
+
+let generalWorkCountTime = 0
+let generalRestCountTime = 0
+
+let faseWorkCount = 1;
+let faseRestCount = 1;
 
 let timer = $('.timer>h1')
 let timerSeconds = 0;
@@ -21,6 +36,10 @@ let generalQueue = ['w', 'sr', 'w', 'sr', 'w', 'sr', 'w', 'lr'].reverse()
 let fase = generalQueue.pop()
 
 let maximunRelativeTimer = 0;
+let maximunGeneralTimer = 0;
+let auxContGeneralTimer = 0;
+let auxContGeneralWorkTimer = 0;
+let auxContGeneralRestTimer = 0;
 
 let timerFrontRelative = $('div.relative-timer-frente > svg > circle')
 const timerFrontRelativeRadius = parseFloat(timerFrontRelative.attr('r'))
@@ -42,6 +61,9 @@ $('.reset').on('click', () => {
     console.log('reseted')
     timer.text('00:00')
     timerRelativePercentage.text('00%')
+    timerFrontGeneral.attr('stroke-dashoffset', timerFrontGeneralArea)
+    timerFrontRelative.attr('stroke-dashoffset', timerFrontRelativeArea)
+    return
 })
 
 $('.play-pause').on('click', () => {
@@ -68,21 +90,60 @@ $('.play-pause').on('click', () => {
 })
 
 incrementSeconds = () => {
+    console.log(timerSeconds)
     if (fase === 'w') {
-        maximunRelativeTimer = workTime;
+        maximunRelativeTimer = workTime
+        maximunGeneralTimer = generalWorkTime;
+        auxContGeneralTimer = auxContGeneralWorkTimer
+        generalCount.text(faseWorkCount.toString() + '/4')
     }
     if (fase === 'sr') {
-        maximunRelativeTimer = shortRestTime;
+        maximunRelativeTimer = shortRestTime
+        maximunGeneralTimer = generalRestTime
+        auxContGeneralTimer = auxContGeneralRestTimer
+        generalCount.text(faseRestCount.toString() + '/4')
     }
     if (fase === 'lr') {
-        maximunRelativeTimer = longRestTime;
+        maximunRelativeTimer = longRestTime
+        maximunGeneralTimer = generalRestTime
+        auxContGeneralTimer = auxContGeneralRestTimer
+        generalCount.text(faseRestCount.toString() + '/4')
     }
 
+
+
     if (timerSeconds >= maximunRelativeTimer) {
+        if (fase === 'w') {
+            faseWorkCount++;
+            generalWorkCountTime++
+            auxContGeneralWorkTimer += workTime
+        }
+        if (fase === 'sr') {
+            faseRestCount++;
+            generalRestCountTime++
+            auxContGeneralRestTimer += shortRestTime
+        }
+        if (fase === 'lr') {
+            faseRestCount++;
+            generalRestCountTime++
+            auxContGeneralRestTimer += longRestTime
+        }
+
+        if (generalQueue.length === 0) {
+            faseWorkCount = 1;
+            faseRestCount = 1;
+            auxContGeneralWorkTimer = 0;
+            auxContGeneralRestTimer = 0;
+            generalQueue = ['w', 'sr', 'w', 'sr', 'w', 'sr', 'w', 'lr'].reverse()
+            fase = generalQueue.pop()
+        }
+
+
         fase = generalQueue.pop()
-        console.log(fase)
-        $('.reset').click()
         workRest = utils.changeIcon(workRest)
+        $('.play-pause').click()
+        $('.reset').click()
+
     }
 
 
@@ -91,15 +152,19 @@ incrementSeconds = () => {
     timerText = moment().startOf('day').seconds(timerSeconds).format("mm:ss");
     timer.text(timerText)
 
-    let timerFrontRelativeNewArea = timerFrontRelativeArea * (1 - timerSeconds / maximunRelativeTimer);
+    timerFrontRelativeNewArea = timerFrontRelativeArea * (1 - timerSeconds / maximunRelativeTimer);
     timerFrontRelative.attr('stroke-dashoffset', timerFrontRelativeNewArea)
 
 
-    let timerFrontGeneralNewArea = timerFrontGeneralArea * (1 - timerSeconds / maximunRelativeTimer);
+    timerFrontGeneralNewArea = timerFrontGeneralArea * (1 - (timerSeconds + auxContGeneralTimer) / maximunGeneralTimer);
     timerFrontGeneral.attr('stroke-dashoffset', timerFrontGeneralNewArea)
+    console.log(maximunGeneralTimer)
 
     let percentage = utils.adjustZeros(Math.floor(100 * timerSeconds / maximunRelativeTimer).toString())
     timerRelativePercentage.text(percentage + '%')
+
+    generalWorkElement.text(utils.adjustZeros(generalWorkCountTime.toString()))
+    genrealRestElement.text(utils.adjustZeros(generalRestCountTime.toString()))
 
 }
 
