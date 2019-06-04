@@ -20,5 +20,16 @@ module.exports = {
         }
         return null
 
+    },
+    playAudio(audio, time) {
+        audio.play();
+        setTimeout(() => {
+            audio.pause();
+            audio.currentTime = 0;
+        }, time * 1000);
+    },
+    stopAudio(audio) {
+        audio.pause();
+        audio.currentTime = 0;
     }
 }

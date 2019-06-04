@@ -2,6 +2,10 @@ const moment = require('moment')
 const utils = require('./utils')
 
 $('[data-toggle="tooltip"]').tooltip();
+let audio = new Audio('../sounds/alarm.mp3')
+
+let workTooltipElement = $('div.total-work')
+let restTooltipElement = $('div.total-rest')
 
 let timerFrontGeneralNewArea = 0;
 let timerFrontRelativeNewArea = 0;
@@ -21,8 +25,11 @@ let generalCount = $('div.general-count > h4')
 let generalWorkTime = workTime * 4
 let generalRestTime = (3 * shortRestTime + longRestTime)
 
-let generalWorkCountTime = 0
-let generalRestCountTime = 0
+let generalWorkCountTotal = 0
+let generalRestCountTotal = 0
+
+let generalWorkTimeTotal = 0
+let generalRestTimeTotal = 0
 
 let faseWorkCount = 1;
 let faseRestCount = 1;
@@ -57,14 +64,16 @@ timerFrontGeneral.attr('stroke-dashoffset', timerFrontGeneralArea)
 
 let timerRelativePercentage = $('div.percentege > h4')
 
-$('.reset').on('click', () => {
+let resetRelativeTimer = () => {
     console.log('reseted')
     timer.text('00:00')
+    timerSeconds = 0
     timerRelativePercentage.text('00%')
-    timerFrontGeneral.attr('stroke-dashoffset', timerFrontGeneralArea)
     timerFrontRelative.attr('stroke-dashoffset', timerFrontRelativeArea)
-    return
-})
+    timerFrontGeneral.attr('stroke-dashoffset', timerFrontGeneralArea)
+}
+
+$('.reset').on('click', resetRelativeTimer)
 
 $('.play-pause').on('click', () => {
     if (playPause[0] === 'play') {
@@ -83,8 +92,12 @@ $('.play-pause').on('click', () => {
         $('#pause-icon').hide()
         $('#play-icon').show()
         $('#play-pause-text').text('Play')
-        new Notification('Stopped Counter')
+        let stopNotification = new Notification('Stopped Counter')
+        console.log(stopNotification)
         clearInterval(timerInterval)
+        stopNotification.onclose = function () {
+            utils.stopAudio(audio)
+        }
         return
     }
 })
@@ -111,22 +124,36 @@ incrementSeconds = () => {
 
 
 
-    if (timerSeconds >= maximunRelativeTimer) {
-        console.log(fase)
+    if (timerSeconds >= maximunRelativeTimer - 1) {
+        console.log(timerSeconds)
         if (fase === 'w') {
             faseWorkCount++;
-            generalWorkCountTime++
+            generalWorkCountTotal++
             auxContGeneralWorkTimer += workTime
+
+            generalWorkTimeTotal = generalWorkCountTotal * workTime
+            generalWorkTimeTotalText = moment().startOf('day').seconds(generalWorkTimeTotal).format("HH:mm:ss");
+            workTooltipElement.attr('data-original-title', generalWorkTimeTotalText)
         }
         if (fase === 'sr') {
             faseRestCount++;
-            generalRestCountTime++
+            generalRestCountTotal++
             auxContGeneralRestTimer += shortRestTime
+
+            let auxRestCountTotal = Math.floor(generalRestCountTotal / 4)
+            generalRestTimeTotal = (generalRestCountTotal - auxRestCountTotal) * shortRestTime + auxRestCountTotal * longRestTime
+            generalRestTimeTotalText = moment().startOf('day').seconds(generalRestTimeTotal).format("HH:mm:ss");
+            restTooltipElement.attr('data-original-title', generalRestTimeTotalText)
         }
         if (fase === 'lr') {
             faseRestCount++;
-            generalRestCountTime++
+            generalRestCountTotal++
             auxContGeneralRestTimer += longRestTime
+
+            let auxRestCountTotal = Math.floor(generalRestCountTotal / 4)
+            generalRestTimeTotal = (generalRestCountTotal - auxRestCountTotal) * shortRestTime + auxRestCountTotal * longRestTime
+            generalRestTimeTotalText = moment().startOf('day').seconds(generalRestTimeTotal).format("HH:mm:ss");
+            restTooltipElement.attr('data-original-title', generalRestTimeTotalText)
         }
 
         if (generalQueue.length === 0) {
@@ -141,8 +168,10 @@ incrementSeconds = () => {
         fase = generalQueue.pop()
         workRest = utils.changeIcon(workRest)
         $('.play-pause').click()
-        $('.reset').click()
-
+        utils.playAudio(audio, 4)
+        setTimeout(() => {
+            resetRelativeTimer();
+        }, 1000)
     }
 
 
@@ -161,8 +190,11 @@ incrementSeconds = () => {
     let percentage = utils.adjustZeros(Math.floor(100 * timerSeconds / maximunRelativeTimer).toString())
     timerRelativePercentage.text(percentage + '%')
 
-    generalWorkElement.text(utils.adjustZeros(generalWorkCountTime.toString()))
-    genrealRestElement.text(utils.adjustZeros(generalRestCountTime.toString()))
+    generalWorkElement.text(utils.adjustZeros(generalWorkCountTotal.toString()))
+    genrealRestElement.text(utils.adjustZeros(generalRestCountTotal.toString()))
+
+
+
 
 }
 
