@@ -90,7 +90,6 @@ $('.play-pause').on('click', () => {
 })
 
 incrementSeconds = () => {
-    console.log(timerSeconds)
     if (fase === 'w') {
         maximunRelativeTimer = workTime
         maximunGeneralTimer = generalWorkTime;
@@ -113,6 +112,7 @@ incrementSeconds = () => {
 
 
     if (timerSeconds >= maximunRelativeTimer) {
+        console.log(fase)
         if (fase === 'w') {
             faseWorkCount++;
             generalWorkCountTime++
@@ -135,7 +135,6 @@ incrementSeconds = () => {
             auxContGeneralWorkTimer = 0;
             auxContGeneralRestTimer = 0;
             generalQueue = ['w', 'sr', 'w', 'sr', 'w', 'sr', 'w', 'lr'].reverse()
-            fase = generalQueue.pop()
         }
 
 
@@ -158,7 +157,6 @@ incrementSeconds = () => {
 
     timerFrontGeneralNewArea = timerFrontGeneralArea * (1 - (timerSeconds + auxContGeneralTimer) / maximunGeneralTimer);
     timerFrontGeneral.attr('stroke-dashoffset', timerFrontGeneralNewArea)
-    console.log(maximunGeneralTimer)
 
     let percentage = utils.adjustZeros(Math.floor(100 * timerSeconds / maximunRelativeTimer).toString())
     timerRelativePercentage.text(percentage + '%')
