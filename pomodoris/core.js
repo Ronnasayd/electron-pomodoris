@@ -1,5 +1,9 @@
+
 const moment = require('moment')
 const utils = require('./utils')
+const renderer = require('./renderer')
+
+
 
 $('[data-toggle="tooltip"]').tooltip();
 let audio = new Audio('../sounds/alarm.mp3')
@@ -16,9 +20,13 @@ let workRest = ['work', 'rest']
 let generalWorkElement = $('div.total-work > h4')
 let genrealRestElement = $('div.total-rest > h4')
 
-let workTime = $('#work-time').val() * 60
-let shortRestTime = $('#short-rest-time').val() * 60
-let longRestTime = $('#long-rest-time').val() * 60
+let workTimeValue = $('#work-time')
+let shortRestTimeValue = $('#short-rest-time')
+let longRestTimeValue = $('#long-rest-time')
+
+let workTime = workTimeValue.val() * 60
+let shortRestTime = shortRestTimeValue.val() * 60
+let longRestTime = longRestTimeValue.val() * 60
 
 let generalCount = $('div.general-count > h4')
 
@@ -48,6 +56,9 @@ let auxContGeneralTimer = 0;
 let auxContGeneralWorkTimer = 0;
 let auxContGeneralRestTimer = 0;
 
+let generalWorkTimeTotalText = '00:00:00';
+let generalRestTimeTotalText = '00:00:00';
+
 let timerFrontRelative = $('div.relative-timer-frente > svg > circle')
 const timerFrontRelativeRadius = parseFloat(timerFrontRelative.attr('r'))
 const timerFrontRelativeArea = 2 * Math.PI * timerFrontRelativeRadius;
@@ -74,6 +85,23 @@ let resetRelativeTimer = () => {
 }
 
 $('.reset').on('click', resetRelativeTimer)
+
+$('.button-save').on('click', () => {
+    renderer.save({
+        workTimeValue: workTimeValue.val(),
+        shortRestTimeValue: shortRestTimeValue.val(),
+        longRestTimeValue: longRestTimeValue.val(),
+        faseWorkCount: faseWorkCount,
+        faseRestCount: faseRestCount,
+        generalQueue: generalQueue,
+        generalWorkCountTotal: generalWorkCountTotal,
+        generalRestCountTotal: generalRestCountTotal,
+        generalWorkTimeTotalText: generalWorkTimeTotalText,
+        generalRestTimeTotalText: generalRestTimeTotalText,
+        fase: fase,
+    })
+    $('.close').click()
+})
 
 $('.play-pause').on('click', () => {
     if (playPause[0] === 'play') {
@@ -172,6 +200,20 @@ incrementSeconds = () => {
         setTimeout(() => {
             resetRelativeTimer();
         }, 1000)
+        renderer.save({
+            workTimeValue: workTimeValue.val(),
+            shortRestTimeValue: shortRestTimeValue.val(),
+            longRestTimeValue: longRestTimeValue.val(),
+            faseWorkCount: faseWorkCount,
+            faseRestCount: faseRestCount,
+            generalQueue: generalQueue,
+            generalWorkCountTotal: generalWorkCountTotal,
+            generalRestCountTotal: generalRestCountTotal,
+            generalWorkTimeTotalText: generalWorkTimeTotalText,
+            generalRestTimeTotalText: generalRestTimeTotalText,
+            fase: fase,
+        })
+
     }
 
 
