@@ -2,8 +2,7 @@
 const { app, BrowserWindow, ipcMain, Menu } = require('electron')
 require('electron-reload')(__dirname);
 
-
-
+const storage = require('electron-json-storage');
 
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -38,7 +37,10 @@ function createWindow() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
+app.on('ready', () => {
+  createWindow()
+})
+
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
@@ -59,5 +61,13 @@ Menu.setApplicationMenu(null)
 
 
 ipcMain.on('save', (event, object) => {
-  console.log(object)
+  storage.set('data', object)
+})
+
+
+ipcMain.on('initialize-variables', (event) => {
+  storage.get('data', (err, data) => {
+    event.sender.send('initialize-variables', data)
+  })
+
 })

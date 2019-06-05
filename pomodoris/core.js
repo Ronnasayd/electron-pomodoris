@@ -3,8 +3,6 @@ const moment = require('moment')
 const utils = require('./utils')
 const renderer = require('./renderer')
 
-
-
 $('[data-toggle="tooltip"]').tooltip();
 let audio = new Audio('../sounds/alarm.mp3')
 
@@ -59,6 +57,31 @@ let auxContGeneralRestTimer = 0;
 let generalWorkTimeTotalText = '00:00:00';
 let generalRestTimeTotalText = '00:00:00';
 
+
+
+renderer.init().then((data) => {
+    fase = data.fase
+    faseRestCount = data.faseRestCount
+    faseWorkCount = data.faseWorkCount
+    generalQueue = data.generalQueue
+    generalRestCountTotal = data.generalRestCountTotal
+    generalRestTimeTotalText = data.generalRestTimeTotalText
+    generalWorkCountTotal = data.generalWorkCountTotal
+    generalWorkTimeTotalText = data.generalWorkTimeTotalText
+
+    longRestTime = data.longRestTimeValue * 60
+    shortRestTime = data.shortRestTimeValue * 60
+    workTime = data.workTimeValue * 60
+
+    longRestTimeValue.val(data.longRestTimeValue)
+    shortRestTimeValue.val(data.shortRestTimeValue)
+    workTimeValue.val(data.workTimeValue)
+
+    workTooltipElement.attr('data-original-title', generalWorkTimeTotalText)
+    restTooltipElement.attr('data-original-title', generalRestTimeTotalText)
+})
+
+
 let timerFrontRelative = $('div.relative-timer-frente > svg > circle')
 const timerFrontRelativeRadius = parseFloat(timerFrontRelative.attr('r'))
 const timerFrontRelativeArea = 2 * Math.PI * timerFrontRelativeRadius;
@@ -83,9 +106,33 @@ let resetRelativeTimer = () => {
     timerFrontRelative.attr('stroke-dashoffset', timerFrontRelativeArea)
     timerFrontGeneral.attr('stroke-dashoffset', timerFrontGeneralArea)
 }
+$('.button-clear').on('click', () => {
+    faseWorkCount = 1
+    faseRestCount = 1
+    generalQueue = ['w', 'sr', 'w', 'sr', 'w', 'sr', 'w', 'lr'].reverse()
+    generalWorkCountTotal = 0
+    generalRestCountTotal = 0
+    generalWorkTimeTotalText = "00:00:00"
+    generalRestTimeTotalText = "00:00:00"
+    fase = generalQueue.pop()
 
+    renderer.save({
+        workTimeValue: workTimeValue.val(),
+        shortRestTimeValue: shortRestTimeValue.val(),
+        longRestTimeValue: longRestTimeValue.val(),
+        faseWorkCount: faseWorkCount,
+        faseRestCount: faseRestCount,
+        generalQueue: generalQueue,
+        generalWorkCountTotal: generalWorkCountTotal,
+        generalRestCountTotal: generalRestCountTotal,
+        generalWorkTimeTotalText: generalWorkTimeTotalText,
+        generalRestTimeTotalText: generalRestTimeTotalText,
+        fase: fase,
+    })
+    $('.close').click()
+
+})
 $('.reset').on('click', resetRelativeTimer)
-
 $('.button-save').on('click', () => {
     renderer.save({
         workTimeValue: workTimeValue.val(),
