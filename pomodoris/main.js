@@ -12,6 +12,7 @@ let mainWindow
 function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
+    icon: __dirname + '/icons/icon.png',
     width: 1280,
     height: 700,
     minWidth: 1280,
@@ -23,7 +24,7 @@ function createWindow() {
 
 
   // and load the index.html of the app.
-  mainWindow.loadFile('app/index.html')
+  mainWindow.loadFile(__dirname + '/app/index.html')
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 

@@ -161,6 +161,10 @@ element.buttonClear.on('click', () => {
     render()
     resetRelativeTimer()
     element.buttonClose.click()
+    new Notification('Pomodoro Notification', {
+        body: 'Factory Reset',
+        icon: __dirname + '/icons/icon.png'
+    })
 })
 // Function verify is cicle complete
 isCicleComplete = () => {
@@ -313,13 +317,23 @@ render = () => {
 }
 
 // Reset relative time 
-element.reset.on('click', resetRelativeTimer)
+element.reset.on('click', () => {
+    resetRelativeTimer()
+    new Notification('Pomodoro Notification', {
+        body: 'Timer Reset',
+        icon: __dirname + '/icons/icon.png'
+    })
+})
 
 // Save changes in configuration
 element.buttonSave.on('click', () => {
     initializeInputValues()
     saveDatabase()
     element.buttonClose.click()
+    new Notification('Pomodoro Notification', {
+        body: 'Changes Save',
+        icon: __dirname + '/icons/icon.png'
+    })
 })
 
 // Play pause button
@@ -329,7 +343,10 @@ element.playPause.on('click', () => {
         element.playIcon.hide()
         element.pauseIcon.show()
         element.playPauseText.text('Pause')
-        new Notification('Counter Started')
+        new Notification('Pomodoro Notification', {
+            body: 'Timer Start',
+            icon: __dirname + '/icons/icon.png'
+        })
         timerInterval = setInterval(incrementSeconds, 1000)
         return
     }
@@ -338,7 +355,10 @@ element.playPause.on('click', () => {
         element.pauseIcon.hide()
         element.playIcon.show()
         element.playPauseText.text('Play')
-        let stopNotification = new Notification('Stopped Counter')
+        let stopNotification = new Notification('Pomodoro Notification', {
+            body: 'Timer Stop',
+            icon: __dirname + '/icons/icon.png'
+        })
         clearInterval(timerInterval)
         stopNotification.onclose = function () {
             utils.stopAudio(audio)
