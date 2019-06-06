@@ -3,7 +3,6 @@ const moment = require('moment')
 const utils = require('./utils')
 const renderer = require('./renderer')
 const element = require('./element')
-const counter = require('./counter')
 
 // Initialize tooltip
 $('[data-toggle="tooltip"]').tooltip();
@@ -12,22 +11,14 @@ let audio = new Audio('../sounds/alarm.mp3')
 
 // Array to change play pause icons
 let playPause = ['play', 'pause'];
-// Array to chagen work rest icons
-let workRest = ['work', 'rest']
 
-// Initialize fase counters
-let faseWorkCount = counter.workCounterNext();
-let faseRestCount = counter.restCounterNext();
+//Initialize fase and faselist
+let faseList = ['w', 'sr', 'w', 'sr', 'w', 'sr', 'w', 'lr'].reverse()
+let fase = faseList.pop()
 
-// Pass de value of form to seconds
-let workTime = element.workTimeValue.val() * 60 // Work time
-let shortRestTime = element.shortRestTimeValue.val() * 60 // short rest time
-let longRestTime = element.longRestTimeValue.val() * 60 // long rest time
-
-// Total work time in a cicle (seconds)
-let generalWorkTime = workTime * 4
-// Total rest time in a cicle (seconds)
-let generalRestTime = (3 * shortRestTime + longRestTime)
+// Fase count and list
+let faseWorkCount = 1
+let faseRestCount = 1
 
 // Initializate sumatorium 
 let sumRestGeneralTime = 0;
@@ -58,14 +49,11 @@ element.timerFrontGeneral.attr('stroke-dasharray', timerGeneralArea)
 element.timerFrontGeneral.attr('stroke-dashoffset', timerGeneralArea)
 
 // Initialize timer seconds
-let timerSeconds;
+let timerSeconds = 0;
 // Initialize timer text
 let timerText;
 // Initialize timer interval
 let timerInterval;
-
-// Initialize fase and faseList
-[fase, faseList] = counter.faseCounterNext()
 
 // Initialize maximun relative timer
 let maximunRelativeTimer;
@@ -80,8 +68,73 @@ let generalRestTimeTotalText = '00:00:00';
 // Initialize percentage
 let percentage;
 
+// Input values
+let workTime
+let shortRestTime
+let longRestTime
+let generalWorkTime
+let generalRestTime
 
+// Initialize the variables dependet of inputs
+initializeInputValues = () => {
+    // Pass de value of form to seconds
+    workTime = element.workTimeValue.val() * 60 // Work time
+    shortRestTime = element.shortRestTimeValue.val() * 60 // short rest time
+    longRestTime = element.longRestTimeValue.val() * 60 // long rest time
+
+    // Total work time in a cicle (seconds)
+    generalWorkTime = workTime * 4
+    // Total rest time in a cicle (seconds)
+    generalRestTime = (3 * shortRestTime + longRestTime)
+}
+
+// Initialize variables with database
+renderer.init().then((data) => {
+    // if is first initialied database is empty
+    if (Object.entries(data).length === 0 && data.constructor === Object) {
+        console.log('Aplication First Init')
+    }
+    else {
+        // get data of database
+        generalRestCountTotal = data.generalRestCountTotal
+        generalWorkCountTotal = data.generalWorkCountTotal
+        generalRestTimeTotalText = data.generalRestTimeTotalText
+        generalWorkTimeTotalText = data.generalWorkTimeTotalText
+        fase = data.fase
+        faseList = data.faseList
+        faseRestCount = data.faseRestCount
+        faseWorkCount = data.faseWorkCount
+        element.workTimeValue.val(data.workTimeValue)
+        element.shortRestTimeValue.val(data.shortRestTimeValue)
+        element.longRestTimeValue.val(data.longRestTimeValue)
+
+    }
+    initializeInputValues()
+    calculate()
+    render()
+    resetRelativeTimer()
+})
+
+// save variables in database
+let saveDatabase = () => {
+    renderer.save({
+        workTimeValue: element.workTimeValue.val(),
+        shortRestTimeValue: element.shortRestTimeValue.val(),
+        longRestTimeValue: element.longRestTimeValue.val(),
+        faseWorkCount: faseWorkCount,
+        faseRestCount: faseRestCount,
+        faseList: faseList,
+        fase: fase,
+        generalWorkCountTotal: generalWorkCountTotal,
+        generalRestCountTotal: generalRestCountTotal,
+        generalWorkTimeTotalText: generalWorkTimeTotalText,
+        generalRestTimeTotalText: generalRestTimeTotalText,
+    })
+}
+
+// Reset elements of relative timer
 let resetRelativeTimer = () => {
+    timerSeconds = 0;
     element.timer.text('00:00')
     element.timerRelativePercentage.text('00%')
     element.timerFrontRelative.attr('stroke-dasharray', timerRelativeArea)
@@ -90,6 +143,26 @@ let resetRelativeTimer = () => {
     element.timerFrontGeneral.attr('stroke-dashoffset', timerGeneralArea)
 }
 
+// Reset fo factory
+element.buttonClear.on('click', () => {
+    generalWorkCountTotal = 0
+    generalRestCountTotal = 0
+    generalWorkTimeTotalText = "00:00:00"
+    generalRestTimeTotalText = "00:00:00"
+    sumWorkGeneralTime = 0
+    sumRestGeneralTime = 0
+    faseRestCount = 1
+    faseWorkCount = 1
+    faseList = ['w', 'sr', 'w', 'sr', 'w', 'sr', 'w', 'lr'].reverse()
+    fase = faseList.pop()
+    initializeInputValues()
+    utils.changeIcon(fase)
+    saveDatabase()
+    render()
+    resetRelativeTimer()
+    element.buttonClose.click()
+})
+// Function verify is cicle complete
 isCicleComplete = () => {
     if (faseList.length === 0) {
         return true
@@ -98,7 +171,7 @@ isCicleComplete = () => {
         return false
     }
 }
-
+// Function verify is fase in end
 isEndFase = () => {
     if (timerSeconds >= maximunRelativeTimer) {
         return true
@@ -108,8 +181,8 @@ isEndFase = () => {
     }
 }
 
+// Calculate all changes
 calculate = () => {
-    console.log(sumWorkGeneralTime, sumRestGeneralTime)
     // increment seconds
     timerSeconds = moment.duration('00:' + element.timer.text()).asSeconds()
     timerSeconds++
@@ -140,39 +213,47 @@ calculate = () => {
     // Calculate area from general tiemer
     timerGeneralNewArea = timerGeneralArea * (1 - (timerSeconds + sumGeneralTime) / maximunGeneralTimer);
 
-    // Calculate tooltip rest timer total
-    auxRestCountTotal = Math.floor(generalRestCountTotal / 4)
-    generalRestTimeTotal = (generalRestCountTotal - auxRestCountTotal) * shortRestTime + auxRestCountTotal * longRestTime
-    generalRestTimeTotalText = moment().startOf('day').seconds(generalRestTimeTotal).format("HH:mm:ss");
-
-    // Calculate work time total tooltip
-    generalWorkTimeTotal = generalWorkCountTotal * workTime
-    generalWorkTimeTotalText = moment().startOf('day').seconds(generalWorkTimeTotal).format("HH:mm:ss");
 
     // Verify if fase is ended
     if (isEndFase()) {
         // Increment counter for fase
         switch (fase) {
             case 'w':
-                faseWorkCount = counter.workCounterNext()
+                faseWorkCount++
                 sumWorkGeneralTime += workTime
                 generalWorkCountTotal++
                 break;
             case 'sr':
-                faseRestCount = counter.restCounterNext()
+                faseRestCount++
                 sumRestGeneralTime += shortRestTime
                 generalRestCountTotal++
                 break;
             case 'lr':
-                faseRestCount = counter.restCounterNext()
+                faseRestCount++
                 sumRestGeneralTime += longRestTime
                 generalRestCountTotal++
                 break;
         }
+        // Calculate tooltip rest timer total
+        auxRestCountTotal = Math.floor(generalRestCountTotal / 4)
+        generalRestTimeTotal = (generalRestCountTotal - auxRestCountTotal) * shortRestTime + auxRestCountTotal * longRestTime
+        generalRestTimeTotalText = moment().startOf('day').seconds(generalRestTimeTotal).format("HH:mm:ss");
+
+        // Calculate work time total tooltip
+        generalWorkTimeTotal = generalWorkCountTotal * workTime
+        generalWorkTimeTotalText = moment().startOf('day').seconds(generalWorkTimeTotal).format("HH:mm:ss");
+
+        // If is pomodoris cicle complete
+        if (isCicleComplete()) {
+            sumRestGeneralTime = 0
+            sumWorkGeneralTime = 0
+            faseRestCount = 1
+            faseWorkCount = 1
+            faseList = ['w', 'sr', 'w', 'sr', 'w', 'sr', 'w', 'lr'].reverse()
+        }
         // Get Next Fase
-        [fase, faseList] = counter.faseCounterNext()
-        // Change work rest icon
-        workRest = utils.changeIcon(workRest)
+        fase = faseList.pop()
+
         // Pause timer
         element.playPause.click()
         // Play audio tag
@@ -182,14 +263,13 @@ calculate = () => {
             resetRelativeTimer();
         }, 1000)
 
-        // If is pomodoris cicle complete
-        if (isCicleComplete()) {
-            sumRestGeneralTime = 0
-            sumWorkGeneralTime = 0
-        }
+        saveDatabase()
+
     }
+
 }
 
+// Render the elements
 render = () => {
     // Render timer
     timerText = moment().startOf('day').seconds(timerSeconds).format("mm:ss");
@@ -228,80 +308,21 @@ render = () => {
             element.generalCount.text(faseRestCount.toString() + '/4')
             break;
     }
+    // Change work rest icon
+    utils.changeIcon(fase)
 }
 
-// renderer.init().then((data) => {
-//     fase = data.fase
-//     faseRestCount = data.faseRestCount
-//     faseWorkCount = data.faseWorkCount
-//     generalQueue = data.generalQueue
-//     generalRestCountTotal = data.generalRestCountTotal
-//     generalRestTimeTotalText = data.generalRestTimeTotalText
-//     generalWorkCountTotal = data.generalWorkCountTotal
-//     generalWorkTimeTotalText = data.generalWorkTimeTotalText
-
-//     longRestTime = data.longRestTimeValue * 60
-//     shortRestTime = data.shortRestTimeValue * 60
-//     workTime = data.workTimeValue * 60
-
-//     element.longRestTimeValue.val(data.longRestTimeValue)
-//     element.shortRestTimeValue.val(data.shortRestTimeValue)
-//     element.workTimeValue.val(data.workTimeValue)
-
-//     element.workTooltipElement.attr('data-original-title', generalWorkTimeTotalText)
-//     element.restTooltipElement.attr('data-original-title', generalRestTimeTotalText)
-// })
-
-element.buttonClear.on('click', () => {
-    generalWorkCountTotal = 0
-    generalRestCountTotal = 0
-    generalWorkTimeTotalText = "00:00:00"
-    generalRestTimeTotalText = "00:00:00"
-    sumWorkGeneralTime = 0
-    sumRestGeneralTime = 0
-    [fase, faseList] = counter.resetFaseCounter()
-    console.log(fase, faseList)
-    faseWorkCount = counter.resetWorkCounter()
-    faseRestCount = counter.resetRestCounter()
-    resetRelativeTimer()
-
-
-
-
-    // renderer.save({
-    //     workTimeValue: workTimeValue.val(),
-    //     shortRestTimeValue: shortRestTimeValue.val(),
-    //     longRestTimeValue: longRestTimeValue.val(),
-    //     faseWorkCount: faseWorkCount,
-    //     faseRestCount: faseRestCount,
-    //     generalQueue: generalQueue,
-    //     generalWorkCountTotal: generalWorkCountTotal,
-    //     generalRestCountTotal: generalRestCountTotal,
-    //     generalWorkTimeTotalText: generalWorkTimeTotalText,
-    //     generalRestTimeTotalText: generalRestTimeTotalText,
-    //     fase: fase,
-    // })
-    element.buttonClose.click()
-
-})
+// Reset relative time 
 element.reset.on('click', resetRelativeTimer)
+
+// Save changes in configuration
 element.buttonSave.on('click', () => {
-    // renderer.save({
-    //     workTimeValue: workTimeValue.val(),
-    //     shortRestTimeValue: shortRestTimeValue.val(),
-    //     longRestTimeValue: longRestTimeValue.val(),
-    //     faseWorkCount: faseWorkCount,
-    //     faseRestCount: faseRestCount,
-    //     generalQueue: generalQueue,
-    //     generalWorkCountTotal: generalWorkCountTotal,
-    //     generalRestCountTotal: generalRestCountTotal,
-    //     generalWorkTimeTotalText: generalWorkTimeTotalText,
-    //     generalRestTimeTotalText: generalRestTimeTotalText,
-    //     fase: fase,
-    // })
+    initializeInputValues()
+    saveDatabase()
     element.buttonClose.click()
 })
 
+// Play pause button
 element.playPause.on('click', () => {
     if (playPause[0] === 'play') {
         playPause = playPause.reverse()

@@ -7,18 +7,15 @@ module.exports = {
             return string
         }
     },
-    changeIcon(iconsList) {
-        if (iconsList[0] === 'work') {
-            $('#work-icon').hide()
-            $('#rest-icon').show()
-            return iconsList.reverse()
-        }
-        if (iconsList[0] === 'rest') {
+    changeIcon(fase) {
+        if (fase === 'w') {
             $('#work-icon').show()
             $('#rest-icon').hide()
-            return iconsList.reverse()
         }
-        return null
+        else {
+            $('#work-icon').hide()
+            $('#rest-icon').show()
+        }
 
     },
     playAudio(audio, time) {

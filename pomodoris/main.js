@@ -61,6 +61,7 @@ Menu.setApplicationMenu(null)
 
 
 ipcMain.on('save', (event, object) => {
+  // console.log(object)
   storage.set('data', object)
 })
 
