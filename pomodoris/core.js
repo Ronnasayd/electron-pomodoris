@@ -257,7 +257,7 @@ calculate = () => {
         // Pause timer
         element.playPause.click()
         // Play audio tag
-        // utils.playAudio(audio, 4)
+        utils.playAudio(audio, 4)
         // Reset the timer
         setTimeout(() => {
             resetRelativeTimer();
