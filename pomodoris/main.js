@@ -1,6 +1,6 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, ipcMain, Menu } = require('electron')
-require('electron-reload')(__dirname);
+if (process.env.NODE_ENV === 'development') { require('electron-reload')(__dirname) }
 
 const storage = require('electron-json-storage');
 
