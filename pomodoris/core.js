@@ -68,6 +68,9 @@ let generalRestTimeTotalText = '00:00:00';
 // Initialize percentage
 let percentage;
 
+// Initialize aux rest count
+let auxRestCount;
+
 // Input values
 let workTime
 let shortRestTime
@@ -86,6 +89,11 @@ initializeInputValues = () => {
     generalWorkTime = workTime * 4
     // Total rest time in a cicle (seconds)
     generalRestTime = (3 * shortRestTime + longRestTime)
+
+    sumWorkGeneralTime = (faseWorkCount - 1) * workTime
+    auxRestCount = Math.floor(faseRestCount / 4)
+    sumRestGeneralTime = ((faseRestCount - 1) - auxRestCount) * shortRestTime + auxRestCount * longRestTime
+
 }
 
 // Initialize variables with database
@@ -107,6 +115,7 @@ renderer.init().then((data) => {
         element.workTimeValue.val(data.workTimeValue)
         element.shortRestTimeValue.val(data.shortRestTimeValue)
         element.longRestTimeValue.val(data.longRestTimeValue)
+
 
     }
     initializeInputValues()
@@ -220,21 +229,22 @@ calculate = () => {
 
     // Verify if fase is ended
     if (isEndFase()) {
+        auxRestCount = Math.floor(faseRestCount / 4)
         // Increment counter for fase
         switch (fase) {
             case 'w':
                 faseWorkCount++
-                sumWorkGeneralTime += workTime
+                sumWorkGeneralTime = (faseWorkCount - 1) * workTime
                 generalWorkCountTotal++
                 break;
             case 'sr':
                 faseRestCount++
-                sumRestGeneralTime += shortRestTime
+                sumRestGeneralTime = ((faseRestCount - 1) - auxRestCount) * shortRestTime + auxRestCount * longRestTime
                 generalRestCountTotal++
                 break;
             case 'lr':
                 faseRestCount++
-                sumRestGeneralTime += longRestTime
+                sumRestGeneralTime = ((faseRestCount - 1) - auxRestCount) * shortRestTime + auxRestCount * longRestTime
                 generalRestCountTotal++
                 break;
         }

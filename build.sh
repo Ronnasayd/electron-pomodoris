@@ -1,1 +1,1 @@
-electron-packager pomodoris/ pomodoris --overwrite --asar --plataform=linux --arch=x64  --prune=true --icon=icons/icon 
+electron-packager pomodoris/ pomodoris --overwrite --asar --plataform=win32 --arch=x64  --prune=true --icon=icons/icon 
