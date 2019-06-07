@@ -4,10 +4,27 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "test": "mocha"
+    "test": "mocha",
+    "pack": "build --dir",
+    "dist": "build"
+  },
+  "build": {
+    "appId": "yourappid",
+    "linux": {
+      "target": [
+        "deb"
+      ]
+    },
+    "win": {
+      "target": "NSIS",
+      "icon": "icons/icon.ico"
+    }
   },
   "repository": "https://github.com/Ronnasayd/electron-pomodoris",
-  "author": "Ronnasayd Machado",
+  "author": {
+    "name": "Ronnasayd Machado",
+    "email": "ronnasayd@hotmail.com"
+  },
   "license": "Mit",
   "devDependencies": {
     "electron": "^5.0.1",
