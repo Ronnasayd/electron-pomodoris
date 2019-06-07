@@ -44,7 +44,7 @@ app.on('ready', () => {
   createWindow()
 })
 
-
+app.setAppUserModelId(process.execPath)
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
   // On macOS it is common for applications and their menu bar

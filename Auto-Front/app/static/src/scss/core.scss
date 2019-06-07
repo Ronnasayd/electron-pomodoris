@@ -3,6 +3,7 @@ body{
     margin: 0;
     background: black;
     color: #00bdfb;
+    font-family: 'Roboto', sans-serif;
 }
 h1{
     font-size: 40px;
@@ -191,4 +192,8 @@ button:focus {
 }
 #play-pause-text{
     margin-left: 5px;
+}
+
+.form-control:focus {
+    box-shadow: none;
 }
